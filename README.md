@@ -1,25 +1,44 @@
 # IMAGE-RESTORATION-INVERSE-VS.-WIENER-FILTERING
-This project demonstrates how to restore an image that has been damaged by motion blur and digital noise. It compares two mathematical methods to see which one performs better under realistic conditions.
+# Image Restoration Project: Inverse vs. Wiener Filtering
 
-Project Steps
-Simulate Motion Blur: The code creates a horizontal blur effect using a 1xN kernel.
+This project implements and compares two primary methods for restoring an image that has been degraded by motion blur and digital noise.
 
-Add Noise: Random Gaussian noise is added to the blurred image to simulate a low-quality camera sensor.
+## Project Overview
 
-Inverse Filter: A simple method that tries to reverse the blur by dividing the image frequencies.
+The script `sc.py` follows a specific image processing workflow to address the following tasks:
 
-Wiener Filter: A more advanced method that balances removing the blur while ignoring the noise.
+* **Motion Blur Simulation**: Creates a horizontal blur effect using a $1 \times N$ kernel applied in the frequency domain.
+* **Noise Addition**: Adds Gaussian noise to the blurred image to simulate real-world sensor interference.
+* **Inverse Filtering**: Implements the standard restoration method by dividing the image spectrum by the blur kernel.
+* **Wiener Filtering**: Implements a robust restoration method that balances blur removal and noise suppression using a constant $K$.
+* **Quality Metrics**: Calculates **PSNR** (Peak Signal-to-Noise Ratio) and **SSIM** (Structural Similarity Index) to evaluate the restoration quality.
 
-Evaluation: The script calculates PSNR and SSIM scores to measure how close the restored image is to the original.
+## Comparison of Methods
 
-Why Wiener is Better than Inverse
-Inverse Filtering Instability: When an image has noise, the inverse filter accidentally multiplies that noise, making the final image look like "snow" or static.
+| Feature | Inverse Filter | Wiener Filter |
+| :--- | :--- | :--- |
+| **Noise Handling** | Poor; amplifies noise significantly. | Good; suppresses noise while restoring. |
+| **Stability** | Unstable; dividing by small kernel values causes artifacts. | Stable; uses a $K$ factor to prevent division by zero. |
+| **Visual Result** | Often results in heavy distortion or "snow". | Much clearer and closer to the original image. |
 
-Wiener Filtering Stability: The Wiener filter uses a constant (K) to stay stable. It knows when to stop trying to fix the blur to avoid making the noise worse.
+## Technical Implementation
 
-How to Use
-Requirements: Install opencv-python, numpy, matplotlib, and scikit-image.
+### Degradation Model
+The image is modeled as $G(u, v) = H(u, v)F(u, v) + N(u, v)$, where $H$ is the blur and $N$ is the noise.
 
-Setup: Place your image in the folder and name it corruptedimg.jpg.
+### Wiener Filter Formula
+The Wiener filter is calculated as:
+$$F_{est} = \left[ \frac{H^*}{|H|^2 + K} \right] G$$
+The parameter $K$ (set to 0.02 in the code) is used to stabilize the restoration against noise.
 
-Run: Execute python sc.py to see the side-by-side comparison and the quality scores.
+## Installation and Usage
+
+1.  **Requirements**: Install the necessary Python libraries:
+    ```bash
+    pip install opencv-python numpy matplotlib scikit-image
+    ```
+2.  **Input Image**: Place an image named `corruptedimg.jpg` in the same directory as the script.
+3.  **Run**: Execute the script to see the visual comparison and quality scores:
+    ```bash
+    python sc.py
+    ```
